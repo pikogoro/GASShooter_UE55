@@ -50,7 +50,9 @@ void UGSAT_WaitInputPressWithTags::OnPressCallback()
 {
 	float ElapsedTime = GetWorld()->GetTimeSeconds() - StartTime;
 
-	if (!Ability || !AbilitySystemComponent)
+	// UE5
+	//if (!Ability || !AbilitySystemComponent)
+ 	if (!Ability || !AbilitySystemComponent.IsValid())
 	{
 		EndTask();
 		return;
@@ -74,7 +76,9 @@ void UGSAT_WaitInputPressWithTags::OnPressCallback()
 
 	AbilitySystemComponent->AbilityReplicatedEventDelegate(EAbilityGenericReplicatedEvent::InputPressed, GetAbilitySpecHandle(), GetActivationPredictionKey()).Remove(DelegateHandle);
 
-	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent, IsPredictingClient());
+	// UE5
+	//FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent, IsPredictingClient());
+	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get(), IsPredictingClient());
 
 	if (IsPredictingClient())
 	{

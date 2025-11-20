@@ -41,7 +41,9 @@ void UAsyncTaskGameplayTagAddedRemoved::EndTask()
 	}
 
 	SetReadyToDestroy();
-	MarkPendingKill();
+	// UE5
+	//MarkPendingKill();
+	MarkAsGarbage();
 }
 
 void UAsyncTaskGameplayTagAddedRemoved::TagChanged(const FGameplayTag Tag, int32 NewCount)

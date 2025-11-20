@@ -47,7 +47,9 @@ void UGSAT_ServerWaitForClientTargetData::OnTargetDataReplicatedCallback(const F
 
 void UGSAT_ServerWaitForClientTargetData::OnDestroy(bool AbilityEnded)
 {
-	if (AbilitySystemComponent)
+	// UE5
+	//if (AbilitySystemComponent)
+ 	if (AbilitySystemComponent.IsValid())
 	{
 		FGameplayAbilitySpecHandle	SpecHandle = GetAbilitySpecHandle();
 		FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();

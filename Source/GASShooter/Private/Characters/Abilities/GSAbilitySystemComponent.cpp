@@ -9,6 +9,7 @@
 #include "GSBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapons/GSWeapon.h"
+#include "AbilitySystemLog.h"	// UE5
 
 static TAutoConsoleVariable<float> CVarReplayMontageErrorThreshold(
 	TEXT("GS.replay.MontageErrorThreshold"),
@@ -281,7 +282,9 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 		{
 			FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(InMesh);
 
-			if (AnimMontageInfo.LocalMontageInfo.AnimatingAbility && AnimMontageInfo.LocalMontageInfo.AnimatingAbility != InAnimatingAbility)
+			// UE5
+			//if (AnimMontageInfo.LocalMontageInfo.AnimatingAbility && AnimMontageInfo.LocalMontageInfo.AnimatingAbility != InAnimatingAbility)
+			if (AnimMontageInfo.LocalMontageInfo.AnimatingAbility.IsValid() && AnimMontageInfo.LocalMontageInfo.AnimatingAbility.Get() != InAnimatingAbility)
 			{
 				// The ability that was previously animating will have already gotten the 'interrupted' callback.
 				// It may be a good idea to make this a global policy and 'cancel' the ability.
@@ -299,7 +302,8 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 
 			AnimMontageInfo.LocalMontageInfo.AnimMontage = NewAnimMontage;
 			AnimMontageInfo.LocalMontageInfo.AnimatingAbility = InAnimatingAbility;
-			AnimMontageInfo.LocalMontageInfo.PlayBit = !AnimMontageInfo.LocalMontageInfo.PlayBit;
+			// UE5
+			//AnimMontageInfo.LocalMontageInfo.PlayBit = !AnimMontageInfo.LocalMontageInfo.PlayBit;
 			
 			if (InAbility)
 			{
@@ -319,8 +323,11 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 				{
 					// Those are static parameters, they are only set when the montage is played. They are not changed after that.
 					FGameplayAbilityRepAnimMontageForMesh& AbilityRepMontageInfo = GetGameplayAbilityRepAnimMontageForMesh(InMesh);
-					AbilityRepMontageInfo.RepMontageInfo.AnimMontage = NewAnimMontage;
-					AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit = !bool(AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit);
+					// UE5
+					//AbilityRepMontageInfo.RepMontageInfo.AnimMontage = NewAnimMontage;
+					AbilityRepMontageInfo.RepMontageInfo.Animation = NewAnimMontage;
+					// UE5
+					//AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit = !bool(AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit);
 
 					// Update parameters that change during Montage life time.
 					AnimMontage_UpdateReplicatedDataForMesh(InMesh);
@@ -493,9 +500,13 @@ UGameplayAbility* UGSAbilitySystemComponent::GetAnimatingAbilityFromAnyMesh()
 	// Only one ability can be animating for all meshes
 	for (FGameplayAbilityLocalAnimMontageForMesh& GameplayAbilityLocalAnimMontageForMesh : LocalAnimMontageInfoForMeshes)
 	{
-		if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility)
+		// UE5
+		//if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility)
+		if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility.IsValid())
 		{
-			return GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility;
+			// UE5
+			//return GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility;
+			return GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility.Get();
 		}
 	}
 
@@ -585,12 +596,16 @@ float UGSAbilitySystemComponent::GetCurrentMontageSectionLengthForMesh(USkeletal
 			// Otherwise we are the last section, so take delta with Montage total time.
 			else
 			{
-				return (CurrentAnimMontage->SequenceLength - CompositeSections[CurrentSectionID].GetTime());
+				// UE5
+				//return (CurrentAnimMontage->SequenceLength - CompositeSections[CurrentSectionID].GetTime());
+				return (CurrentAnimMontage->CalculateSequenceLength() - CompositeSections[CurrentSectionID].GetTime());
 			}
 		}
 
 		// if we have no sections, just return total length of Montage.
-		return CurrentAnimMontage->SequenceLength;
+		// UE5
+		//return CurrentAnimMontage->SequenceLength;
+		return CurrentAnimMontage->CalculateSequenceLength();
 	}
 
 	return 0.f;
@@ -670,7 +685,9 @@ void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(FGamepla
 
 	if (AnimInstance && AnimMontageInfo.LocalMontageInfo.AnimMontage)
 	{
-		OutRepAnimMontageInfo.RepMontageInfo.AnimMontage = AnimMontageInfo.LocalMontageInfo.AnimMontage;
+		// UE5
+		//OutRepAnimMontageInfo.RepMontageInfo.AnimMontage = AnimMontageInfo.LocalMontageInfo.AnimMontage;
+		OutRepAnimMontageInfo.RepMontageInfo.Animation = AnimMontageInfo.LocalMontageInfo.AnimMontage;
 
 		// Compressed Flags
 		bool bIsStopped = AnimInstance->Montage_GetIsStopped(AnimMontageInfo.LocalMontageInfo.AnimMontage);
@@ -722,7 +739,8 @@ void UGSAbilitySystemComponent::AnimMontage_UpdateForcedPlayFlagsForMesh(FGamepl
 {
 	FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(OutRepAnimMontageInfo.Mesh);
 
-	OutRepAnimMontageInfo.RepMontageInfo.ForcePlayBit = AnimMontageInfo.LocalMontageInfo.PlayBit;
+	// UE5
+	//OutRepAnimMontageInfo.RepMontageInfo.ForcePlayBit = AnimMontageInfo.LocalMontageInfo.PlayBit;
 }
 
 void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
@@ -759,31 +777,46 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 			if (DebugMontage)
 			{
 				ABILITY_LOG(Warning, TEXT("\n\nOnRep_ReplicatedAnimMontage, %s"), *GetNameSafe(this));
+#if 0	// UE5
 				ABILITY_LOG(Warning, TEXT("\tAnimMontage: %s\n\tPlayRate: %f\n\tPosition: %f\n\tBlendTime: %f\n\tNextSectionID: %d\n\tIsStopped: %d\n\tForcePlayBit: %d"),
-					*GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage),
+					// UE5
+					//*GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage),
+					*GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.Animation),
 					NewRepMontageInfoForMesh.RepMontageInfo.PlayRate,
 					NewRepMontageInfoForMesh.RepMontageInfo.Position,
 					NewRepMontageInfoForMesh.RepMontageInfo.BlendTime,
 					NewRepMontageInfoForMesh.RepMontageInfo.NextSectionID,
 					NewRepMontageInfoForMesh.RepMontageInfo.IsStopped,
 					NewRepMontageInfoForMesh.RepMontageInfo.ForcePlayBit);
+#endif
 				ABILITY_LOG(Warning, TEXT("\tLocalAnimMontageInfo.AnimMontage: %s\n\tPosition: %f"),
 					*GetNameSafe(AnimMontageInfo.LocalMontageInfo.AnimMontage), AnimInstance->Montage_GetPosition(AnimMontageInfo.LocalMontageInfo.AnimMontage));
 			}
 
-			if (NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage)
+			// UE5
+			//if (NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage)
+			if (NewRepMontageInfoForMesh.RepMontageInfo.Animation)
 			{
 				// New Montage to play
-				const bool ReplicatedPlayBit = bool(NewRepMontageInfoForMesh.RepMontageInfo.ForcePlayBit);
-				if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage) || (AnimMontageInfo.LocalMontageInfo.PlayBit != ReplicatedPlayBit))
+				// UE5
+				//const bool ReplicatedPlayBit = bool(NewRepMontageInfoForMesh.RepMontageInfo.ForcePlayBit);
+				const bool ReplicatedPlayBit = true;
+				// UE5
+				//if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage) || (AnimMontageInfo.LocalMontageInfo.PlayBit != ReplicatedPlayBit))
+				if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != NewRepMontageInfoForMesh.RepMontageInfo.Animation))
 				{
-					AnimMontageInfo.LocalMontageInfo.PlayBit = ReplicatedPlayBit;
-					PlayMontageSimulatedForMesh(NewRepMontageInfoForMesh.Mesh, NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage, NewRepMontageInfoForMesh.RepMontageInfo.PlayRate);
+					// UE5
+					//AnimMontageInfo.LocalMontageInfo.PlayBit = ReplicatedPlayBit;
+					// UE5
+					//PlayMontageSimulatedForMesh(NewRepMontageInfoForMesh.Mesh, NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage, NewRepMontageInfoForMesh.RepMontageInfo.PlayRate);
+					PlayMontageSimulatedForMesh(NewRepMontageInfoForMesh.Mesh, NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage(), NewRepMontageInfoForMesh.RepMontageInfo.PlayRate);
 				}
 
 				if (AnimMontageInfo.LocalMontageInfo.AnimMontage == nullptr)
 				{
-					ABILITY_LOG(Warning, TEXT("OnRep_ReplicatedAnimMontage: PlayMontageSimulated failed. Name: %s, AnimMontage: %s"), *GetNameSafe(this), *GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage));
+					// UE5
+					//ABILITY_LOG(Warning, TEXT("OnRep_ReplicatedAnimMontage: PlayMontageSimulated failed. Name: %s, AnimMontage: %s"), *GetNameSafe(this), *GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage));
+					ABILITY_LOG(Warning, TEXT("OnRep_ReplicatedAnimMontage: PlayMontageSimulated failed. Name: %s, AnimMontage: %s"), *GetNameSafe(this), *GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.Animation));
 					return;
 				}
 
@@ -841,7 +874,9 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 					if ((CurrentSectionID == RepSectionID) && (FMath::Abs(DeltaPosition) > MONTAGE_REP_POS_ERR_THRESH) && (NewRepMontageInfoForMesh.RepMontageInfo.IsStopped == 0))
 					{
 						// fast forward to server position and trigger notifies
-						if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage))
+						// UE5
+						//if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage))
+						if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage()))
 						{
 							// Skip triggering notifies if we're going backwards in time, we've already triggered them.
 							const float DeltaTime = !FMath::IsNearlyZero(NewRepMontageInfoForMesh.RepMontageInfo.PlayRate) ? (DeltaPosition / NewRepMontageInfoForMesh.RepMontageInfo.PlayRate) : 0.f;

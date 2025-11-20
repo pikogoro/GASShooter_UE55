@@ -21,7 +21,9 @@ UGSAT_WaitTargetDataUsingActor* UGSAT_WaitTargetDataUsingActor::WaitTargetDataWi
 
 void UGSAT_WaitTargetDataUsingActor::Activate()
 {
-	if (IsPendingKill())
+	// UE5
+	//if (IsPendingKill())
+	if (IsValid(this))
 	{
 		return;
 	}
@@ -40,7 +42,9 @@ void UGSAT_WaitTargetDataUsingActor::Activate()
 
 void UGSAT_WaitTargetDataUsingActor::OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& Data, FGameplayTag ActivationTag)
 {
-	check(AbilitySystemComponent);
+	// UE5
+	//check(AbilitySystemComponent);
+ 	check(AbilitySystemComponent.IsValid());
 
 	FGameplayAbilityTargetDataHandle MutableData = Data;
 	AbilitySystemComponent->ConsumeClientReplicatedTargetData(GetAbilitySpecHandle(), GetActivationPredictionKey());
@@ -77,7 +81,9 @@ void UGSAT_WaitTargetDataUsingActor::OnTargetDataReplicatedCallback(const FGamep
 
 void UGSAT_WaitTargetDataUsingActor::OnTargetDataReplicatedCancelledCallback()
 {
-	check(AbilitySystemComponent);
+	// UE5
+	//check(AbilitySystemComponent);
+ 	check(AbilitySystemComponent.IsValid());
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		Cancelled.Broadcast(FGameplayAbilityTargetDataHandle());
@@ -87,14 +93,18 @@ void UGSAT_WaitTargetDataUsingActor::OnTargetDataReplicatedCancelledCallback()
 
 void UGSAT_WaitTargetDataUsingActor::OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& Data)
 {
-	check(AbilitySystemComponent);
+	// UE5
+	//check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 	if (!Ability)
 	{
 		return;
 	}
 
-	FScopedPredictionWindow	ScopedPrediction(AbilitySystemComponent,
-		ShouldReplicateDataToServer() && (bCreateKeyIfNotValidForMorePredicting && !AbilitySystemComponent->ScopedPredictionKey.IsValidForMorePrediction()));
+	// UE5
+	//FScopedPredictionWindow	ScopedPrediction(AbilitySystemComponent,
+ 	FScopedPredictionWindow	ScopedPrediction(AbilitySystemComponent.Get(),
+	ShouldReplicateDataToServer() && (bCreateKeyIfNotValidForMorePredicting && !AbilitySystemComponent->ScopedPredictionKey.IsValidForMorePrediction()));
 
 	const FGameplayAbilityActorInfo* Info = Ability->GetCurrentActorInfo();
 	if (IsPredictingClient())
@@ -124,9 +134,13 @@ void UGSAT_WaitTargetDataUsingActor::OnTargetDataReadyCallback(const FGameplayAb
 
 void UGSAT_WaitTargetDataUsingActor::OnTargetDataCancelledCallback(const FGameplayAbilityTargetDataHandle& Data)
 {
-	check(AbilitySystemComponent);
+	// UE5
+	//check(AbilitySystemComponent);
+ 	check(AbilitySystemComponent.IsValid());
 
-	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent, IsPredictingClient());
+	// UE5
+	//FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent, IsPredictingClient());
+ 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get(), IsPredictingClient());
 
 	if (IsPredictingClient())
 	{
@@ -146,7 +160,9 @@ void UGSAT_WaitTargetDataUsingActor::OnTargetDataCancelledCallback(const FGamepl
 
 void UGSAT_WaitTargetDataUsingActor::ExternalConfirm(bool bEndTask)
 {
-	check(AbilitySystemComponent);
+	// UE5
+	//check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 	if (TargetActor)
 	{
 		if (TargetActor->ShouldProduceTargetData())
@@ -159,7 +175,9 @@ void UGSAT_WaitTargetDataUsingActor::ExternalConfirm(bool bEndTask)
 
 void UGSAT_WaitTargetDataUsingActor::ExternalCancel()
 {
-	check(AbilitySystemComponent);
+	// UE5
+	//check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		Cancelled.Broadcast(FGameplayAbilityTargetDataHandle());
@@ -205,7 +223,9 @@ void UGSAT_WaitTargetDataUsingActor::FinalizeTargetActor() const
 
 void UGSAT_WaitTargetDataUsingActor::RegisterTargetDataCallbacks()
 {
-	if (!ensure(IsPendingKill() == false))
+	// UE5
+	//if (!ensure(IsPendingKill() == false))
+	if (!ensure(IsValid(this) == false))
 	{
 		return;
 	}

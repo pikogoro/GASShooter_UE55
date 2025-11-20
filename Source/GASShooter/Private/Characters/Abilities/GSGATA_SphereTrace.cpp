@@ -80,7 +80,9 @@ void AGSGATA_SphereTrace::SphereTraceWithFilter(TArray<FHitResult>& OutHitResult
 	{
 		FHitResult& Hit = HitResults[HitIdx];
 
-		if (!Hit.Actor.IsValid() || FilterHandle.FilterPassesForActor(Hit.Actor))
+		// UE5
+		//if (!Hit.Actor.IsValid() || FilterHandle.FilterPassesForActor(Hit.Actor))
+		if (!IsValid(Hit.GetActor()) || FilterHandle.FilterPassesForActor(Hit.GetActor()))
 		{
 			Hit.TraceStart = TraceStart;
 			Hit.TraceEnd = End;

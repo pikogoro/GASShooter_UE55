@@ -53,7 +53,9 @@ void UAsyncTaskAttributeChanged::EndTask()
 	}
 
 	SetReadyToDestroy();
-	MarkPendingKill();
+	// UE5
+	//MarkPendingKill();
+	MarkAsGarbage();
 }
 
 void UAsyncTaskAttributeChanged::AttributeChanged(const FOnAttributeChangeData & Data)
