@@ -23,7 +23,7 @@ void UGSAT_WaitTargetDataUsingActor::Activate()
 {
 	// UE5
 	//if (IsPendingKill())
-	if (IsValid(this))
+	if (!IsValid(this))
 	{
 		return;
 	}
@@ -225,7 +225,7 @@ void UGSAT_WaitTargetDataUsingActor::RegisterTargetDataCallbacks()
 {
 	// UE5
 	//if (!ensure(IsPendingKill() == false))
-	if (!ensure(IsValid(this) == false))
+	if (!ensure(!IsValid(this) == false))
 	{
 		return;
 	}

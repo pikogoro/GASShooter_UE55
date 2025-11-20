@@ -800,7 +800,6 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 				// New Montage to play
 				// UE5
 				//const bool ReplicatedPlayBit = bool(NewRepMontageInfoForMesh.RepMontageInfo.ForcePlayBit);
-				const bool ReplicatedPlayBit = true;
 				// UE5
 				//if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage) || (AnimMontageInfo.LocalMontageInfo.PlayBit != ReplicatedPlayBit))
 				if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != NewRepMontageInfoForMesh.RepMontageInfo.Animation))

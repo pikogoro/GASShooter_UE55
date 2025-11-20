@@ -16,7 +16,8 @@ public class GASShooter : ModuleRules
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
-			"Paper2D"
+			"Paper2D",
+			"NetCore",	// UE5
 		});
 
 		// Uncomment if you are using online features
