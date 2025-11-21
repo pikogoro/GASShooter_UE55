@@ -509,7 +509,14 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 			// Update TraceStart because old persistent HitResults will have their original TraceStart and the player could have moved since then
 			HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
 
-			if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[PersistentHitResultIndex].Get())
+			// UE5
+			//if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[PersistentHitResultIndex].Get())
+			AGameplayAbilityWorldReticle* LocalReticleActor = nullptr;
+			if (!ReticleActors.IsEmpty()) {
+				LocalReticleActor = ReticleActors[PersistentHitResultIndex].Get();
+			}
+			if (LocalReticleActor)
+			//
 			{
 				// UE5
 				//const bool bHitActor = HitResult.Actor != nullptr;

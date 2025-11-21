@@ -7,7 +7,7 @@ public class GASShooter : ModuleRules
 	public GASShooter(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
+
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {
@@ -24,5 +24,7 @@ public class GASShooter : ModuleRules
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
 		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+		// UE5
+		//PrivateDefinitions.Add("ENABLE_DRAW_DEBUG");
 	}
 }
