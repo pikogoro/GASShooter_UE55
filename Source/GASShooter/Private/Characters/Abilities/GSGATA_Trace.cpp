@@ -220,9 +220,14 @@ void AGSGATA_Trace::AimWithPlayerController(const AActor* InSourceActor, FCollis
 	FVector ViewStart = TraceStart;
 	FRotator ViewRot = StartLocation.GetTargetingTransform().GetRotation().Rotator();
 
-	if (MasterPC)
+	// UE5
+	//if (MasterPC)
+	//{
+	//	MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
+	//}
+	if (PrimaryPC)
 	{
-		MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
+		PrimaryPC->GetPlayerViewPoint(ViewStart, ViewRot);
 	}
 
 	const FVector ViewDir = ViewRot.Vector();
@@ -339,11 +344,15 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 	FVector TraceStart = StartLocation.GetTargetingTransform().GetLocation();
 	FVector TraceEnd;
 
-	if (MasterPC)
+	// UE5
+	//if (MasterPC)
+	if (PrimaryPC)
 	{
 		FVector ViewStart;
 		FRotator ViewRot;
-		MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
+		// UE5
+		//MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
+		PrimaryPC->GetPlayerViewPoint(ViewStart, ViewRot);
 
 		TraceStart = bTraceFromPlayerViewPoint ? ViewStart : TraceStart;
 	}
@@ -566,7 +575,9 @@ AGameplayAbilityWorldReticle* AGSGATA_Trace::SpawnReticleActor(FVector Location,
 		AGameplayAbilityWorldReticle* SpawnedReticleActor = GetWorld()->SpawnActor<AGameplayAbilityWorldReticle>(ReticleClass, Location, Rotation);
 		if (SpawnedReticleActor)
 		{
-			SpawnedReticleActor->InitializeReticle(this, MasterPC, ReticleParams);
+			// UE5
+			//SpawnedReticleActor->InitializeReticle(this, MasterPC, ReticleParams);
+			SpawnedReticleActor->InitializeReticle(this, PrimaryPC, ReticleParams);
 			SpawnedReticleActor->SetActorHiddenInGame(true);
 			ReticleActors.Add(SpawnedReticleActor);
 

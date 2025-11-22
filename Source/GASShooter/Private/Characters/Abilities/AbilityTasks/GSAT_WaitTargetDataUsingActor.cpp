@@ -190,7 +190,9 @@ void UGSAT_WaitTargetDataUsingActor::InitializeTargetActor() const
 	check(TargetActor);
 	check(Ability);
 
-	TargetActor->MasterPC = Ability->GetCurrentActorInfo()->PlayerController.Get();
+	// UE5
+	//TargetActor->MasterPC = Ability->GetCurrentActorInfo()->PlayerController.Get();
+	TargetActor->PrimaryPC = Ability->GetCurrentActorInfo()->PlayerController.Get();
 
 	// If we spawned the target actor, always register the callbacks for when the data is ready.
 	TargetActor->TargetDataReadyDelegate.AddUObject(const_cast<UGSAT_WaitTargetDataUsingActor*>(this), &UGSAT_WaitTargetDataUsingActor::OnTargetDataReadyCallback);
