@@ -271,4 +271,8 @@ protected:
 	void ServerCurrentMontageSetPlayRateForMesh(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float InPlayRate);
 	void ServerCurrentMontageSetPlayRateForMesh_Implementation(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float InPlayRate);
 	bool ServerCurrentMontageSetPlayRateForMesh_Validate(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float InPlayRate);
+
+	// UE5
+	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec);
+	virtual void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec);
 };
