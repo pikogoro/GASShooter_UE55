@@ -1,7 +1,7 @@
 # GASShooter
 
 > [!Note]
-> I forked the GASShooter repository (https://github.com/tranek/GASShooter) and migrated from UE4 to UE5. I am not responsible for any issues that may arise from using it.
+> A fork of the GASShooter repository (https://github.com/tranek/GASShooter) was created and migrated from UE4 to UE5. No responsibility is assumed for any issues that may arise from its use.
 
 ## Introduction
 
