@@ -1,5 +1,8 @@
 # GASShooter
 
+> [!Note]
+> I forked the GASShooter repository (https://github.com/tranek/GASShooter) and migrated from UE4 to UE5. I am not responsible for any issues that may arise from using it.
+
 ## Introduction
 
 GASShooter is an advanced FPS/TPS Sample Project for Unreal Engine 4's GameplayAbilitySystem (GAS) plugin. This is a sister project to the [GASDocumentation](https://github.com/tranek/GASDocumentation) and information about the techniques demonstrated here will be discussed in detail in the README there.
